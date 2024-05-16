@@ -9,14 +9,18 @@ function hashPwd(password) {
     return bcrypt.hash(password, JWT_SALT_ROUNDS);
 }
 
+function comparePwds(password, hashedPwd) {
+    return bcrypt.compare(password, hashedPwd);
+}
+
 function generateJwt(payload) {
     return jwt.sign(payload, JWT_SECRET_KEY, {
         expiresIn: JWT_EXPIRE_TIME
     })
 }
 
-function comparePwds(password, hashedPwd) {
-    return bcrypt.compare(password, hashedPwd);
+function verifyJwt(token) {
+    return jwt.verify(token, JWT_SECRET_KEY);
 }
 
-module.exports = { hashPwd, generateJwt, comparePwds };
+module.exports = { hashPwd, comparePwds, generateJwt, verifyJwt };

@@ -1,4 +1,4 @@
-const jwt = require('jsonwebtoken');
+const { verifyJwt } = require('../utilities/Security');
 const AuthenticationError = require('../errors/AuthenticationError');
 
 function authenticateToken(req, res, next) {
@@ -8,14 +8,12 @@ function authenticateToken(req, res, next) {
         next(new AuthenticationError("Token not provided"));
         return;
     }
-    jwt.verify(token, JWT_SECRET_KEY, (err, user) => {
-        if (err) {
-            next(new AuthenticationError("Invalid token"));
-            return;
-        }
-        req.user = user;
+    try {
+        verifyJwt(token);
         next();
-    })
+    } catch (err) {
+        next(new AuthenticationError("Invalid token"));
+    }
 }
 
 module.exports = { authenticateToken };
