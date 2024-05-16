@@ -30,7 +30,7 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // POST endpoint for user login
-app.post('/api/login', async (req, res) => {
+app.post('/api/login', async (req, res, next) => {
     const { usernameOrEmail, password } = req.body;
     const user = await Users.findOne({
         $or: [{
@@ -41,16 +41,19 @@ app.post('/api/login', async (req, res) => {
         }]
     });
     if (!user) {
-        throw new AuthenticationError("User not found");
+        next(new AuthenticationError("User not found"));
+        return;
     }
-    const validationResult = false;
+    let validationResult = false;
     try {
-        validationResult = await bcrypt.compare(password, user.password)
+        validationResult = await bcrypt.compare(password, user.password || '');
     } catch (error) {
-        throw new AuthenticationError("Error while validating password");
+        next(new AuthenticationError("Error while validating password"));
+        return;
     }
     if (!validationResult) {
-        throw new AuthenticationError("Incorrect password");
+        next(new AuthenticationError("Incorrect password"));
+        return;
     }
     const payload = {
         username: user.username,
@@ -66,22 +69,26 @@ app.post('/api/login', async (req, res) => {
 });
 
 // Middleware for route protection
-// Usage:
-// app.get('/api/secure', authenticateToken, (req, res)=>{})
 function authenticateToken(req, res, next) {
     const authHeader = req.headers.authorization;
     const token = authHeader && authHeader.split(' ')[1];
     if (!token) {
-        throw new AuthenticationError("Token not provided");
+        next(new AuthenticationError("Token not provided"));
+        return;
     }
     jwt.verify(token, JWT_SECRET_KEY, (err, user) => {
         if (err) {
-            throw new AuthenticationError("Invalid token");
+            next(new AuthenticationError("Invalid token"));
+            return;
         }
         req.user = user;
         next();
     })
 }
+
+app.get('/api/secure', authenticateToken, (req, res)=>{
+    res.send({message: "OK"})
+})
 
 // Global error handler
 app.use((err, req, res, next) => {
