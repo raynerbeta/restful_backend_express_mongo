@@ -1,7 +1,7 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const Mongo = require('./model/Mongo');
 const authRoutes = require('./routes/auth.js');
 
 // Defining constants from environment
@@ -11,14 +11,15 @@ const MONGO_PORT = process.env.MONGO_PORT || 27017;
 const MONGO_USER = process.env.MONGO_USER || "root";
 const MONGO_PASS = process.env.MONGO_PASS || "MjkwNjAtcmF5bmVy";
 const MONGO_DB_NAME = process.env.MONGO_DB_NAME || "restful_backend";
-const MONGO_URI = `mongodb://${MONGO_USER}:${MONGO_PASS}@${MONGO_HOST}:${MONGO_PORT}`;
 
 // Connection to MongoDB
-mongoose.connect(MONGO_URI, { dbName: MONGO_DB_NAME })
+const mongo = new Mongo(MONGO_HOST, MONGO_PORT, MONGO_USER, MONGO_PASS, MONGO_DB_NAME);
+mongo.Connect()
     .catch((err) => {
-        console.log(`Database connection error:\n${err.stack}`);
+        console.log(err.stack);
         process.exit(1);
     });
+
 
 const app = express();
 app.use(cors());
