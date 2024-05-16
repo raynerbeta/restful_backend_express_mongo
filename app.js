@@ -1,11 +1,8 @@
-// Importing required libraries and modules
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-// Importing routes
 const authRoutes = require('./routes/auth.js');
-// Importing custom error
 
 // Defining constants from environment
 const APP_PORT = process.env.APP_PORT || 3000;
