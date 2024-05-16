@@ -1,8 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const Mongo = require('./model/Mongo');
+const Mongo = require('./utilities/Mongo');
 const authRoutes = require('./routes/auth.js');
+const protectedRoutes = require('./routes/protected');
+const ValidationError = require('./errors/ValidationError');
 
 // Defining constants from environment
 const APP_PORT = process.env.APP_PORT || 3000;
@@ -20,40 +22,17 @@ mongo.Connect()
         process.exit(1);
     });
 
-
 const app = express();
 app.use(cors());
-
-//app.use("*", bodyParser.json());
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/auth', authRoutes);
+app.use('/protected', protectedRoutes);
 
-// Middleware for route protection
-/*
-function authenticateToken(req, res, next) {
-    const authHeader = req.headers.authorization;
-    const token = authHeader && authHeader.split(' ')[1];
-    if (!token) {
-        next(new AuthenticationError("Token not provided"));
-        return;
-    }
-    jwt.verify(token, JWT_SECRET_KEY, (err, user) => {
-        if (err) {
-            next(new AuthenticationError("Invalid token"));
-            return;
-        }
-        req.user = user;
-        next();
-    })
-}
-*/
-/*
-app.get('/api/secure', authenticateToken, (req, res) => {
-    res.send({ message: "OK" })
-})
-*/
+app.all('*', (req, res, next) => {
+    next(new ValidationError(`You requested a non-existent resource: ${req.originalUrl}`));
+});
 
 // Global error handler
 app.use((err, req, res, next) => {
@@ -65,14 +44,6 @@ app.use((err, req, res, next) => {
         message: err.message
     })
 });
-/*
-app.all('*', (req, res) => {
-    res.status(404).json({
-        statusCode: 404,
-        message: `You requested a non-existent resource: ${req.originalUrl}`
-    });
-});
-*/
 
 // Starting the server and listening on the specified port
 app.listen(APP_PORT, () => {
