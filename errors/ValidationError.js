@@ -8,7 +8,7 @@ class ValidationError extends Error {
     constructor(message) {
         super(message);
         this.statusCode = 404;
-        this.name = "ValidationError"
+        this.name = "Validation error"
     }
 }
 

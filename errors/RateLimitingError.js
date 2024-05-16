@@ -8,7 +8,7 @@ class RateLimitingError extends Error {
     constructor(message) {
         super(message);
         this.statusCode = 429;
-        this.name = "RateLimitingError";
+        this.name = "RateLimiting error";
     }
 }
 
