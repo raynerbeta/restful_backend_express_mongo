@@ -11,7 +11,7 @@ const APP_PORT = process.env.APP_PORT || 3000;
 const MONGO_HOST = process.env.MONGO_HOST || "localhost";
 const MONGO_PORT = process.env.MONGO_PORT || 27017;
 const MONGO_USER = process.env.MONGO_USER || "root";
-const MONGO_PASS = process.env.MONGO_PASS || "NzU0OS1yYXluZXJi";
+const MONGO_PASS = process.env.MONGO_PASS || "MjY0OTctcmF5bmVy";
 const MONGO_DB_NAME = process.env.MONGO_DB_NAME || "restful_backend";
 
 // Connection to MongoDB
@@ -37,7 +37,7 @@ app.all('*', (req, res, next) => {
 // Global error handler
 app.use((err, req, res, next) => {
     err.statusCode = err.statusCode || 500;
-    err.status = err.message || "Internal server error";
+    err.message = err.message || "Internal server error";
     console.log(err.stack);
     res.status(err.statusCode).json({
         statusCode: err.statusCode,
