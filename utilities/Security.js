@@ -16,7 +16,7 @@ function comparePwds(password, hashedPwd) {
 function generateJwt(payload) {
     return jwt.sign(payload, JWT_SECRET_KEY, {
         expiresIn: JWT_EXPIRE_TIME
-    })
+    });
 }
 
 function verifyJwt(token) {

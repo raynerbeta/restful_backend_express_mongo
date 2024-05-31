@@ -9,9 +9,9 @@ const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         const uploadDir = path.join(__dirname, IMG_PATH, `${req.user.email}/`);
         if (!fs.existsSync(uploadDir)) {
-            try{
-                fs.mkdirSync(uploadDir, {recursive: true});
-            }catch(err){
+            try {
+                fs.mkdirSync(uploadDir, { recursive: true });
+            } catch (err) {
                 cb(new Error('Error while uploading image'));
             };
         }
