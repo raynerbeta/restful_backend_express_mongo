@@ -9,7 +9,8 @@ function authenticateToken(req, res, next) {
         return;
     }
     try {
-        verifyJwt(token);
+        const payload = verifyJwt(token);
+        req.user = payload;
         next();
     } catch (err) {
         next(new AuthenticationError("Invalid token"));

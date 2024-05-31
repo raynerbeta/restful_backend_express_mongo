@@ -74,7 +74,6 @@ async function LoginUser(req, res, next) {
         return;
     }
     const payload = {
-        username: user.username,
         email: user.email
     };
     const token = generateJwt(payload);
