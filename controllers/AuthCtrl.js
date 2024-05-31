@@ -3,11 +3,16 @@ const Users = require('../model/User');
 const ValidationError = require('../errors/ValidationError');
 const AuthenticationError = require('../errors/AuthenticationError');
 const DatabaseError = require('../errors/DatabaseError');
+const { userSchema } = require('../utilities/Joi');
 
 async function RegisterUser(req, res, next) {
     const { email, password } = req.body;
-    if (!email || !password || typeof (email) !== 'string') {
-        next(new ValidationError("Email and password required for registering"));
+    const { error } = userSchema.validate({
+        email,
+        password
+    });
+    if (error) {
+        next(new ValidationError("Email and/or password have an invalid format"));
         return;
     }
     const user = await Users.findOne({
@@ -44,8 +49,12 @@ async function RegisterUser(req, res, next) {
 
 async function LoginUser(req, res, next) {
     const { email, password } = req.body;
-    if (!email || !password || typeof (email) !== 'string') {
-        next(new ValidationError("Email and password are required for loging"));
+    const { error } = userSchema.validate({
+        email,
+        password
+    });
+    if (error) {
+        next(new ValidationError("Email and/or password have an invalid format"));
         return;
     }
     const user = await Users.findOne({
